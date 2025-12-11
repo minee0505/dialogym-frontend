@@ -365,12 +365,12 @@ export const useRealtimeSession = (scenarioId, userId) => {
             // 3. Ephemeral Key 발급 (재개 시에도 새로 발급)
             console.log('🔑 Ephemeral Key 발급 요청 시작...', {
                 sessionId: targetSessionId,
-                model: "gpt-4o-realtime-preview-2024-10-01"
+                model: "gpt-realtime"
             });
 
             const ephemeralResponse = await apiClient.post('/realtime/session', {
                 sessionId: targetSessionId,
-                model: "gpt-4o-realtime-preview-2024-10-01",
+                model: "gpt-realtime",
                 voice: "alloy",
                 sttModel: "whisper-1",
                 language: "ko"
@@ -1168,7 +1168,7 @@ export const useRealtimeSession = (scenarioId, userId) => {
         const offer = await pcRef.current.createOffer();
         await pcRef.current.setLocalDescription(offer);
 
-        const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01`, {
+        const sdpResponse = await fetch(`https://api.openai.com/v1/realtime?model=gpt-realtime`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${ephemeralKey}`,
