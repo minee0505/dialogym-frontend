@@ -305,8 +305,10 @@ export const useRealtimeSession = (scenarioId, userId) => {
                 console.log('이미 완료된 시나리오입니다.');
                 throw new Error('이미 완료된 시나리오입니다.');
             } else if (status === 'abandoned') {
-                console.log('중단된 시나리오입니다. 새로 시작해주세요.');
-                throw new Error('중단된 시나리오입니다. 새로 시작해주세요.');
+                console.log('중단된 시나리오 - 로컬 스토리지 초기화 후 새로 시작');
+                // 중단된 세션 정보 삭제하고 새로 시작
+                localStorage.removeItem(`session_${scenarioId}_${userId}`);
+                // 계속 진행 (새 세션 생성)
             } else if (status === 'ongoing') {
                 console.log('진행 중인 대화를 복구합니다.');
                 // ongoing 상태는 세션 복구로 재시도 허용 - 계속 진행

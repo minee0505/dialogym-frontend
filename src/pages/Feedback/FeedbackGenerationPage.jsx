@@ -30,6 +30,7 @@ const FeedbackGenerationPage = () => {
         const fetchFeedback = async () => {
             try {
                 setLoading(true);
+                console.log('🔍 피드백 생성 요청 시작:', sessionId);
                 const data = await generateFeedback(sessionId);
                 console.log('✅ 피드백 데이터 받음:', data);
                 console.log('📊 데이터 구조:', {
@@ -43,9 +44,22 @@ const FeedbackGenerationPage = () => {
                 setFeedback(data);
             } catch (err) {
                 console.error('피드백 생성 실패:', err);
+                console.error('에러 상세:', {
+                    status: err.response?.status,
+                    data: err.response?.data,
+                    message: err.message,
+                    sessionId: sessionId
+                });
                 const errorData = err.response?.data;
-                setError(errorData?.detail || errorData?.message || '피드백 생성에 실패했습니다.');
-                toast.error('피드백 생성에 실패했습니다.');
+                let errorMessage = errorData?.detail || errorData?.message || errorData?.error || '피드백 생성에 실패했습니다.';
+                
+                // AI 분석 실패 시 더 자세한 안내
+                if (errorData?.errorCode === 'AI_ANALYSIS_FAILED') {
+                    errorMessage = 'AI 피드백 생성 중 오류가 발생했습니다.\n백엔드 서버 로그를 확인해주세요.';
+                }
+                
+                setError(errorMessage);
+                toast.error(errorMessage);
             } finally {
                 setLoading(false);
             }

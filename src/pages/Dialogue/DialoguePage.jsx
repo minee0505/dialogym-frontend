@@ -73,10 +73,12 @@ const DialoguePage = () => {
                         console.log('✅ 완료된 시나리오 감지');
                         setPageStatus('blocked');
                         setBlockReason('완료된 시나리오입니다.\n다른 시나리오를 선택해주세요.');
-                    } else if (backendSession.status === 'COMPLETED' || localSession.status === 'abandoned') {
-                        console.log('✅ 중단된 시나리오 감지');
-                        setPageStatus('blocked');
-                        setBlockReason('중단된 대화입니다.\n중단된 대화는 다시 시작할 수 없습니다.\n다른 시나리오를 선택해주세요.');
+                    } else if (backendSession.status === 'ABANDONED' || localSession.status === 'abandoned') {
+                        console.log('✅ 중단된 시나리오 감지 - 로컬 스토리지 초기화');
+                        // 중단된 세션 정보 삭제
+                        localStorage.removeItem(`session_${scenarioId}_${userId}`);
+                        // 새로 시작
+                        setPageStatus('connecting');
                     } else if (backendSession.status === 'ONGOING' || localSession.status === 'failed') {
                         console.log('진행 중인 세션을 복구합니다.');
                         setPageStatus('connecting');
@@ -195,8 +197,10 @@ const DialoguePage = () => {
         console.log('대화 완료 중...');
 
         try {
+            console.log('🔍 세션 완료 처리 시작:', currentSessionId);
             await handleEndSession(true); // 완료로 처리
             console.log('✅ 대화 연습이 완료되었습니다');
+            console.log('🔍 피드백 페이지로 이동:', `/feedback/${currentSessionId}`);
             // 피드백 페이지로 이동
             navigate(`/feedback/${currentSessionId}`);
         } catch (error) {
